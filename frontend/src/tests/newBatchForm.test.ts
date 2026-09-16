@@ -98,19 +98,10 @@ vi.mock('frappe-ui', () => ({
 	Select: passthrough,
 }))
 
-vi.mock('@framework/ui/telemetry/index', async (importOriginal) => ({
-	...(await importOriginal<typeof import('@framework/ui/telemetry/index')>()),
+vi.mock('frappe-ui/frappe', () => ({
 	useTelemetry: () => ({ capture: vi.fn() }),
+	useOnboarding: () => ({ updateOnboardingStep: vi.fn() }),
 }))
-vi.mock(
-	'@framework/ui/components/Onboarding/index',
-	async (importOriginal) => ({
-		...(await importOriginal<
-			typeof import('@framework/ui/components/Onboarding/index')
-		>()),
-		useOnboarding: () => ({ updateOnboardingStep: vi.fn() }),
-	})
-)
 
 // The rich text editor drags in ProseMirror; the form's behaviour under test
 // does not involve it.

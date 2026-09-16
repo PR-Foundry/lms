@@ -2,12 +2,12 @@
 	<PageHeader v-if="!fromLesson" :breadcrumbs="breadcrumbs" />
 	<div
 		v-if="falconError"
-		class="flex items-center justify-between p-3 text-sm bg-surface-amber-1 text-ink-amber-2"
+		class="flex items-center justify-between p-3 text-sm bg-surface-amber-1 text-ink-amber-3"
 	>
 		<span>
 			{{ falconError }}
 		</span>
-		<Button v-if="user.data?.is_moderator" @click="openSettings('general')">
+		<Button v-if="user.data?.is_moderator" @click="openSettings('General')">
 			<template #prefix>
 				<span class="lucide-settings size-4" />
 			</template>
@@ -46,6 +46,7 @@
 						@click="submitCode"
 						:loading="running"
 						:disabled="running"
+						class="text-ink-gray-9"
 					>
 						<template #prefix>
 							<span class="lucide-play size-3" />
@@ -69,7 +70,7 @@
 						v-if="error"
 						v-model="errorMessage"
 						:aria-label="__('Compiler Message')"
-						class="font-mono text-ink-red-5 bg-surface-gray-1 border-none text-sm h-32 leading-6"
+						class="font-mono text-ink-red-3 bg-surface-gray-1 border-none text-sm h-32 leading-6"
 						readonly
 					/>
 				</div>
@@ -93,8 +94,8 @@
 								class="font-semibold ms-2 me-1"
 								:class="
 									testCase.status === 'Passed'
-										? 'text-ink-green-2'
-										: 'text-ink-red-2'
+										? 'text-ink-green-3'
+										: 'text-ink-red-3'
 								"
 							>
 								{{ testCase.status }}
@@ -143,7 +144,7 @@ import {
 	usePageMeta,
 } from 'frappe-ui'
 import { computed, inject, onMounted, ref, watch } from 'vue'
-import PageHeader from '@/components/Layouts/pages/PageHeader.vue'
+import PageHeader from '@/components/Layouts/PageHeader.vue'
 import { sessionStore } from '@/stores/session'
 import { useRouter } from 'vue-router'
 import { openSettings } from '@/utils'

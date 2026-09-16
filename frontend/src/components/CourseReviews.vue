@@ -151,14 +151,12 @@ const reviews = createResource({
 	makeParams() {
 		return { course: props.courseName }
 	},
-	auto: Boolean(props.courseName),
+	auto: true,
 }) as Resource<CourseReviewInfo[] | null>
 
 watch(
 	() => props.courseName,
-	() => {
-		if (props.courseName) reviews.reload()
-	}
+	() => reviews.reload()
 )
 
 const showReviewModal = ref(false)

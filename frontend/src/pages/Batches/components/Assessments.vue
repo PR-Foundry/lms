@@ -16,7 +16,7 @@
 				:columns="assessmentColumns"
 				:rows="assessments.data"
 				row-key="name"
-				class="sm:border sm:rounded-6"
+				class="sm:border sm:rounded-lg"
 				:options="listOptions"
 			>
 				<template #cell="{ column, value }">
@@ -206,7 +206,7 @@ const getStatusTheme = (status) => {
 	if (status === 'Pass' || status === 'Passed') {
 		return 'green'
 	} else if (status === 'Not Graded') {
-		return 'amber'
+		return 'orange'
 	} else {
 		return 'red'
 	}

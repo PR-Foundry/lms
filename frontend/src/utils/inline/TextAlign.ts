@@ -1,4 +1,4 @@
-import { ToolButton } from './ToolButton'
+import type { API, InlineTool, InlineToolConstructorOptions } from '@editorjs/editorjs'
 import { alignLeftIcon, alignCenterIcon, alignRightIcon } from './icons'
 
 type AlignOption = 'left' | 'center' | 'right'
@@ -6,38 +6,61 @@ type AlignOption = 'left' | 'center' | 'right'
 interface AlignSelection {
 	start: number
 	end: number
-	host: HTMLElement | null
+	div: HTMLElement | null
 }
 
-const ALIGN_CLASS = 'lms-align'
-
-/** The largest valid offset in a node: characters for text, children otherwise. */
-const offsetLimit = (node: Node): number =>
-	node.nodeType === Node.TEXT_NODE
-		? (node as Text).length
-		: node.childNodes.length
-
 /**
- * Wraps the whole block in one `<span class="lms-align">` carrying `text-align`.
- * It was a custom `<lms-align>` element, which no save survived: nh3 and
- * DOMPurify both allowlist by tag name and unwrap anything they do not know.
+ * Text-align inline tool, ported from automad's TextAlign. Unlike the decoration
+ * tools it does not extend BaseInline: it wraps the whole block content in a
+ * sanitized `<lms-align>` block-level element and sets its `text-align`. The
+ * offset-based save/restore is copied verbatim from automad (fragile for richly
+ * formatted blocks, but matches the reference behaviour).
  */
-abstract class BaseTextAlign extends ToolButton {
-	static get sanitize(): Record<string, unknown> {
-		return { span: { class: true, style: true } }
+abstract class BaseTextAlign implements InlineTool {
+	static get isInline(): boolean {
+		return true
+	}
+
+	static get sanitize(): Record<string, boolean> {
+		return { 'lms-align': true }
 	}
 
 	protected abstract get align(): AlignOption
+	protected abstract get icon(): string
 
-	private readonly tag = 'SPAN'
+	protected readonly api: API
+	private readonly tag = 'LMS-ALIGN'
+	private readonly button: HTMLButtonElement
 	private selection: AlignSelection | null = null
+	private _state = false
+
+	get state(): boolean {
+		return this._state
+	}
+
+	set state(state: boolean) {
+		this._state = state
+		this.button.classList.toggle(this.api.styles.inlineToolButtonActive, state)
+	}
+
+	constructor({ api }: InlineToolConstructorOptions) {
+		this.api = api
+		this.button = document.createElement('button')
+		this.button.type = 'button'
+		this.button.classList.add(this.api.styles.inlineToolButton)
+	}
+
+	render(): HTMLElement {
+		this.button.innerHTML = this.icon
+		return this.button
+	}
 
 	surround(): void {
 		this.saveSelection()
 		if (this.state) {
 			this.removeWrapper()
 		} else {
-			const node = this.findWrapper() ?? this.createWrapper()
+			const node = this.api.selection.findParentTag(this.tag) ?? this.createWrapper()
 			if (node) {
 				node.style.textAlign = this.align
 				node.style.display = 'block'
@@ -47,32 +70,13 @@ abstract class BaseTextAlign extends ToolButton {
 	}
 
 	checkState(): boolean {
-		const node = this.findWrapper()
+		const node = this.api.selection.findParentTag(this.tag)
 		this.state = node !== null && node.style.textAlign === this.align
 		return this.state
 	}
 
-	private findWrapper(): HTMLElement | null {
-		return this.api.selection.findParentTag(this.tag, ALIGN_CLASS)
-	}
-
-	/** The block's own editable root. `findParentTag('DIV')` escaped the
-	 * contenteditable on a heading and wrapped the `<h2>` itself. */
-	private get host(): HTMLElement | null {
-		const selection = window.getSelection()
-		const node = selection?.anchorNode
-		if (!node) {
-			return null
-		}
-		const element =
-			node.nodeType === Node.ELEMENT_NODE
-				? (node as HTMLElement)
-				: node.parentElement
-		return element?.closest<HTMLElement>('[contenteditable="true"]') ?? null
-	}
-
 	private removeWrapper(): void {
-		const node = this.findWrapper()
+		const node = this.api.selection.findParentTag(this.tag)
 		if (!node) {
 			return
 		}
@@ -88,15 +92,19 @@ abstract class BaseTextAlign extends ToolButton {
 	}
 
 	private createWrapper(): HTMLElement | null {
-		const host = this.host
-		if (!host) {
+		const div = this.api.selection.findParentTag('DIV')
+		if (!div) {
 			return null
 		}
-		const range = document.createRange()
-		range.selectNodeContents(host)
+		this.api.selection.expandToTag(div)
+		const selection = window.getSelection()
+		if (!selection || selection.rangeCount === 0) {
+			return null
+		}
+		const range = selection.getRangeAt(0)
+		const contents = range.extractContents()
 		const node = document.createElement(this.tag)
-		node.classList.add(ALIGN_CLASS)
-		node.appendChild(range.extractContents())
+		node.appendChild(contents)
 		range.insertNode(node)
 		return node
 	}
@@ -106,39 +114,30 @@ abstract class BaseTextAlign extends ToolButton {
 		this.selection = {
 			start: selection ? selection.anchorOffset : 0,
 			end: selection ? selection.focusOffset : 0,
-			host: this.host,
+			div: this.api.selection.findParentTag('DIV'),
 		}
 	}
 
-	/** Offsets are saved against the caret's node but restored against the
-	 * wrapper's first child, a different node after the rewrap. Unclamped that
-	 * throws IndexSizeError whenever the caret sat inside a formatted run. */
 	private restoreSelection(): void {
 		const selection = window.getSelection()
-		const anchor = this.anchorNode()
-		if (!selection || !this.selection || !anchor) {
+		if (!selection || !this.selection || !this.selection.div) {
 			return
 		}
-		const limit = offsetLimit(anchor)
 		selection.removeAllRanges()
+		const wrapper = this.selection.div.querySelector(
+			`:scope > ${this.tag.toLowerCase()}`
+		)
+		const element = wrapper ?? this.selection.div
+		const anchor = element.childNodes[0]
+		if (!anchor) {
+			return
+		}
 		selection.setBaseAndExtent(
 			anchor,
-			Math.min(this.selection.start, limit),
+			this.selection.start,
 			anchor,
-			Math.min(this.selection.end, limit)
+			this.selection.end
 		)
-	}
-
-	/** Where the caret goes back: into the wrapper if there is one, else the host. */
-	private anchorNode(): ChildNode | null {
-		const host = this.selection?.host
-		if (!host) {
-			return null
-		}
-		const wrapper = host.querySelector<HTMLElement>(
-			`:scope > ${this.tag.toLowerCase()}.${ALIGN_CLASS}`
-		)
-		return (wrapper ?? host).firstChild
 	}
 }
 

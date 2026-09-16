@@ -15,8 +15,7 @@
 		<div
 			:id="inputId"
 			ref="editor"
-			:aria-label="ariaLabel"
-			class="h-auto flex-1 overflow-hidden overscroll-none !rounded-4 border border-outline-gray-2 bg-surface-gray-2 transition-colors hover:border-outline-gray-3 focus-within:border-outline-gray-4 focus-within:shadow-sm dark:bg-gray-900"
+			class="h-auto flex-1 overflow-hidden overscroll-none !rounded border border-outline-gray-2 bg-surface-gray-2 transition-colors hover:border-outline-gray-3 focus-within:border-outline-gray-4 focus-within:shadow-sm dark:bg-gray-900"
 		/>
 		<InputDescription
 			v-if="showDescription"
@@ -60,13 +59,6 @@ const props = defineProps({
 	label: {
 		type: String,
 		default: '',
-	},
-	// Names the ACTUAL editor region, not the wrapper InputLabel already
-	// associates via labelId/inputId. Optional and undefined by default, so
-	// callers that rely on InputLabel's own association are unaffected.
-	ariaLabel: {
-		type: String,
-		default: undefined,
 	},
 	readonly: {
 		type: Boolean,
@@ -152,26 +144,20 @@ const setupEditor = () => {
 			aceEditor?.session.setMode('ace/mode/html')
 		})
 	}
-	// `change` as well as `blur`: autosave arms its rest period from `@input`,
-	// which ace's hidden textarea fires while typing, so a blur-only emit left
-	// the timer running against a stale document. Escape unmounts the panel
-	// without moving focus, so blur never fires and the typed value is lost.
-	aceEditor.on('change', pushValue)
-	aceEditor.on('blur', pushValue)
-}
-
-const pushValue = () => {
-	if (props.showSaveButton || props.readonly) return
-	try {
-		let value = aceEditor?.getValue() || ''
-		if (props.type === 'JSON') {
-			value = JSON.parse(value)
+	aceEditor.on('blur', () => {
+		try {
+			let value = aceEditor?.getValue() || ''
+			if (props.type === 'JSON') {
+				value = JSON.parse(value)
+			}
+			if (value === props.modelValue) return
+			if (!props.showSaveButton && !props.readonly) {
+				emit('update:modelValue', value)
+			}
+		} catch (e) {
+			// do nothing
 		}
-		if (value === props.modelValue) return
-		emit('update:modelValue', value)
-	} catch (e) {
-		// A half-typed JSON body is not a value yet. blur emits it once it parses.
-	}
+	})
 }
 
 const getModelValue = () => {
@@ -212,10 +198,6 @@ watch(
 watch(
 	() => props.modelValue,
 	() => {
-		// The parent echoing back what was just typed would otherwise call
-		// setValue + clearSelection on every keystroke, dropping the caret to the
-		// end of the document.
-		if (aceEditor?.getValue() === getModelValue()) return
 		resetEditor(props.modelValue as string)
 	}
 )

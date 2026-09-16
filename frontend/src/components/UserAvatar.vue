@@ -8,16 +8,22 @@
 		v-bind="$attrs"
 	>
 		<template v-if="user.open_to === 'Work'" #indicator>
-			<Tooltip :text="__('Open to Work')" side="right">
+			<Tooltip :text="__('Open to Work')" placement="right">
 				<div class="rounded-full bg-surface-green-7 w-fit">
-					<span class="lucide-badge-check" :class="'text-white ' + checkSize" />
+					<span
+						class="lucide-badge-check"
+						:class="'text-ink-green-1 ' + checkSize"
+					/>
 				</div>
 			</Tooltip>
 		</template>
 		<template v-else-if="user.open_to === 'Hiring'" #indicator>
-			<Tooltip :text="__('Hiring')" side="right">
+			<Tooltip :text="__('Hiring')" placement="right">
 				<div class="rounded-full bg-surface-violet-7 w-fit">
-					<span class="lucide-badge-check" :class="'text-white ' + checkSize" />
+					<span
+						class="lucide-badge-check"
+						:class="'text-ink-violet-1 ' + checkSize"
+					/>
 				</div>
 			</Tooltip>
 		</template>

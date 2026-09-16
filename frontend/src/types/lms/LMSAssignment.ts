@@ -23,10 +23,4 @@ export interface LMSAssignment {
 	grade_assignment?: 0 | 1
 	/**	Course : Link - LMS Course	*/
 	course?: string
-	/**	Enable Scheduling : Check	*/
-	enable_scheduling?: 0 | 1
-	/**	Schedule Start : Datetime	*/
-	schedule_start?: string
-	/**	Schedule End : Datetime	*/
-	schedule_end?: string
 }

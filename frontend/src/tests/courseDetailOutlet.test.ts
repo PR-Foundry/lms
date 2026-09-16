@@ -34,13 +34,8 @@ vi.mock('frappe-ui', () => ({
 	Tabs: passthrough,
 }))
 
-// Mocks the specific `@framework/ui` submodules this file imports from — the
-// bare package root's barrel also `export *`s components (GeolocationField
-// among them) that import `leaflet`/`leaflet-draw` assets not installed here.
-vi.mock('@framework/ui/telemetry/index', () => ({
+vi.mock('frappe-ui/frappe', () => ({
 	useTelemetry: () => ({ capture: vi.fn() }),
-}))
-vi.mock('@framework/ui/components/Onboarding/index', () => ({
 	useOnboarding: () => ({ updateOnboardingStep: vi.fn() }),
 }))
 
@@ -51,7 +46,7 @@ vi.mock('@framework/ui/components/Onboarding/index', () => ({
 const { stub } = vi.hoisted(() => ({
 	stub: () => ({ default: { render: () => null } }),
 }))
-vi.mock('@/components/Layouts/pages/TabbedDetailPage.vue', stub)
+vi.mock('@/components/Layouts/TabbedDetailPage.vue', stub)
 vi.mock('@/pages/Courses/CourseOverview.vue', stub)
 vi.mock('@/pages/Courses/CourseDashboard.vue', stub)
 vi.mock('@/pages/Courses/CourseEditor.vue', stub)

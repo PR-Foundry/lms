@@ -97,7 +97,7 @@ export class Program {
 					`programming-exercises/${exercise}/submission/${submission}?fromLesson=1${studentView}`
 				)
 				const frame = embedFrame(submissionPath, {
-					class: 'w-full h-[900px] border rounded-5',
+					class: 'w-full h-[900px] border rounded-md',
 				})
 				this.wrapper.replaceChildren(...(frame ? [frame] : []))
 			})

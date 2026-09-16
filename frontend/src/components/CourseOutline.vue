@@ -37,7 +37,7 @@
 		<div
 			v-else
 			:class="{
-				'border-2 rounded-5 py-2 px-2': showOutline && outline.data?.length,
+				'border-2 rounded-md py-2 px-2': showOutline && outline.data?.length,
 			}"
 		>
 			<Draggable
@@ -98,7 +98,7 @@ interface DialogAction {
 	label: string
 	theme?: string
 	variant?: string
-	onClick: (context: { close: () => void }) => void
+	onClick: (close: () => void) => void
 }
 type DialogFn = (opts: {
 	title: string
@@ -163,14 +163,12 @@ const outline = createResource({
 	makeParams() {
 		return { course: props.courseName, progress: props.getProgress }
 	},
-	auto: Boolean(props.courseName),
+	auto: true,
 }) as Resource<OutlineChapter[] | null>
 
 watch(
 	() => props.courseName,
-	() => {
-		if (props.courseName) outline.reload()
-	}
+	() => outline.reload()
 )
 
 watch(
@@ -338,7 +336,7 @@ function trashLesson(lessonName: string, chapterName: string) {
 				label: __('Delete'),
 				theme: 'red',
 				variant: 'solid',
-				onClick({ close }) {
+				onClick(close) {
 					// Per-call onSuccess closes over this lessonName, so the editor is
 					// told exactly which lesson went: no shared slot to drift on
 					// concurrent deletes. Runs alongside the resource-level reload.
@@ -364,7 +362,7 @@ function trashChapter(chapterName: string) {
 				label: __('Delete'),
 				theme: 'red',
 				variant: 'solid',
-				onClick({ close }) {
+				onClick(close) {
 					deleteChapter.submit(
 						{ chapter: chapterName },
 						{

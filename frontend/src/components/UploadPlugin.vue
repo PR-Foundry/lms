@@ -1,8 +1,7 @@
 <template>
 	<FileUploader
 		:fileTypes="['image/*', 'video/*', 'audio/*', '.pdf']"
-		:private="true"
-		v-bind="attachArgs"
+		:uploadArgs="uploadArgs"
 		:validateFile="validateFile"
 		@success="(data) => addFile(data)"
 		ref="fileUploader"
@@ -28,16 +27,16 @@ const props = defineProps({
 })
 
 // Attach to the lesson only once it exists: a null docname with doctype set
-// makes the File doctype reject the upload. Uploads are always private
-// (course lesson attachments, not public course media).
-const attachArgs = computed(() => {
+// makes the File doctype reject the upload.
+const uploadArgs = computed(() => {
+	const args = { private: true }
 	const docname = props.uploadContext?.docname
-	if (!docname) return {}
-	return {
-		doctype: 'Course Lesson',
-		docname,
-		fieldname: props.uploadContext?.fieldname || 'content',
+	if (docname) {
+		args.doctype = 'Course Lesson'
+		args.docname = docname
+		args.fieldname = props.uploadContext?.fieldname || 'content'
 	}
+	return args
 })
 
 onMounted(async () => {

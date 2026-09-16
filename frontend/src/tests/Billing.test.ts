@@ -143,8 +143,7 @@ vi.mock('frappe-ui', () => ({
 	},
 }))
 
-vi.mock('@framework/ui/telemetry/index', async (importOriginal) => ({
-	...(await importOriginal<typeof import('@framework/ui/telemetry/index')>()),
+vi.mock('frappe-ui/frappe', () => ({
 	useTelemetry: () => ({ capture: vi.fn() }),
 }))
 vi.mock('@/stores/session', () => ({

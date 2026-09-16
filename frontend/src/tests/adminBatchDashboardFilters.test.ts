@@ -84,14 +84,6 @@ vi.mock('frappe-ui', () => {
 	}
 })
 
-vi.mock('frappe-ui/experimental', () => ({
-	AxisChart: {
-		name: 'AxisChart',
-		props: ['data', 'options'],
-		template: `<div />`,
-	},
-}))
-
 vi.mock('@/utils', () => ({ formatAmount: (v: unknown) => String(v) }))
 
 // Inlined rather than built by a helper: vi.mock factories are hoisted above

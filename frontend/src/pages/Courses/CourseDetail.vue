@@ -10,7 +10,7 @@
 	>
 		<template #actions="{ tab }">
 			<template v-if="tab?.key === 'settings' && courseFormRef">
-				<Badge v-if="courseFormRef.isDirty" theme="amber">
+				<Badge v-if="courseFormRef.isDirty" theme="orange">
 					{{ __('Not Saved') }}
 				</Badge>
 				<Dropdown
@@ -26,7 +26,7 @@
 				<Tooltip
 					v-if="!courseFormRef.isDirty"
 					:text="__('No changes to save')"
-					:hoverDelay="100"
+					:hoverDelay="0.1"
 				>
 					<HeaderButton :label="__('Save')" variant="solid" disabled />
 				</Tooltip>
@@ -191,12 +191,10 @@
 				class="pointer-events-none absolute inset-x-0 top-0 z-10 hidden md:flex"
 			>
 				<div class="w-[70%]" />
-				<!-- h-12 is the tab strip's height: the bar sits level with it, so
-				     the two bottom borders have to meet. -->
 				<div
-					class="pointer-events-auto flex h-12 w-[30%] items-center justify-between gap-x-2 border-s border-b bg-surface-base px-5"
+					class="pointer-events-auto flex w-[30%] items-center justify-between gap-x-2 border-s border-b bg-surface-base p-1 px-5"
 				>
-					<div class="text-p-base-medium text-ink-gray-9">
+					<div class="py-2.5 text-p-base-medium text-ink-gray-9">
 						{{ __('Chapters') }}
 					</div>
 					<Button size="sm" @click="courseEditorRef?.openAddChapter()">
@@ -229,8 +227,8 @@ import {
 } from 'frappe-ui'
 import { sessionStore } from '@/stores/session'
 import { useScreenSize } from '@/utils/composables'
-import TabbedDetailPage from '@/components/Layouts/pages/TabbedDetailPage.vue'
-import type { DetailTab } from '@/components/Layouts/pages/TabbedDetailPage.vue'
+import TabbedDetailPage from '@/components/Layouts/TabbedDetailPage.vue'
+import type { DetailTab } from '@/components/Layouts/TabbedDetailPage.vue'
 import CourseOverview from '@/pages/Courses/CourseOverview.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import CourseDashboard from '@/pages/Courses/CourseDashboard.vue'

@@ -9,7 +9,7 @@
 		doc-prop="batch"
 	>
 		<template #actions="{ tab, instance }">
-			<Badge v-if="tab?.key === 'settings' && instance?.isDirty" theme="amber">
+			<Badge v-if="tab?.key === 'settings' && instance?.isDirty" theme="orange">
 				{{ __('Not Saved') }}
 			</Badge>
 			<Button
@@ -23,6 +23,7 @@
 			<Dropdown
 				v-if="isAdmin && batchMenu(tab).length"
 				:options="batchMenu(tab)"
+				placement="left"
 				side="left"
 			>
 				<template v-slot="{ open }">
@@ -119,7 +120,7 @@ import Discussions from '@/components/Discussions.vue'
 import HeaderButton from '@/components/HeaderButton.vue'
 import ShortcutTooltip from '@/components/ShortcutTooltip.vue'
 import SkeletonLoader from '@/components/SkeletonLoader.vue'
-import TabbedDetailPage from '@/components/Layouts/pages/TabbedDetailPage.vue'
+import TabbedDetailPage from '@/components/Layouts/TabbedDetailPage.vue'
 import { openBatchForm } from '@/composables/useBatchForms'
 
 const router = useRouter()

@@ -7,16 +7,6 @@ export let Dialogs = {
 	name: 'Dialogs',
 	render() {
 		return dialogs.value.map((dialog) => {
-			// A dialog that IS a component draws its own Dialog, so it renders
-			// directly rather than nested inside a second one. It takes the same
-			// `show` model, letting a caller with no template open a modal.
-			if (dialog.component) {
-				return h(dialog.component, {
-					...dialog.props,
-					show: dialog.show,
-					'onUpdate:show': (val) => (dialog.show = val),
-				})
-			}
 			return h(
 				Dialog,
 				{
@@ -27,8 +17,8 @@ export let Dialogs = {
 					icon: dialog.icon,
 					position: dialog.position,
 					actions: dialog.actions,
-					open: dialog.show,
-					'onUpdate:open': (val) => (dialog.show = val),
+					modelValue: dialog.show,
+					'onUpdate:modelValue': (val) => (dialog.show = val),
 				},
 				() => [
 					h(
@@ -48,9 +38,6 @@ export function createDialog(options) {
 	dialog.key = `dialog-${Math.random().toString(36).slice(2, 9)}`
 	dialogs.value.push(dialog)
 	dialog.show = true
-	// The reactive entry, so a caller can reopen this dialog instead of pushing
-	// a second copy of it onto a list nothing ever empties.
-	return dialog
 }
 
 export function isDialogOpen() {

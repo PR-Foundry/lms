@@ -16,8 +16,7 @@ vi.mock('frappe-ui', () => ({
 	call: callMock,
 	usePageMeta: vi.fn(),
 }))
-vi.mock('@framework/ui/telemetry/index', async (importOriginal) => ({
-	...(await importOriginal<typeof import('@framework/ui/telemetry/index')>()),
+vi.mock('frappe-ui/frappe', () => ({
 	useTelemetry: () => ({ capture: captureMock }),
 }))
 vi.mock('vue-router', () => ({

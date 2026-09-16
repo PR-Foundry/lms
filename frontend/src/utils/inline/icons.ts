@@ -9,6 +9,7 @@ import strikethroughIcon from 'lucide-static/icons/strikethrough.svg?raw'
 import alignLeftIcon from 'lucide-static/icons/align-left.svg?raw'
 import alignCenterIcon from 'lucide-static/icons/align-center.svg?raw'
 import alignRightIcon from 'lucide-static/icons/align-right.svg?raw'
+import paintBucketIcon from 'lucide-static/icons/paint-bucket.svg?raw'
 
 export {
 	boldIcon,
@@ -17,4 +18,5 @@ export {
 	alignLeftIcon,
 	alignCenterIcon,
 	alignRightIcon,
+	paintBucketIcon,
 }

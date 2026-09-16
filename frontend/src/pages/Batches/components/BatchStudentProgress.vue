@@ -41,7 +41,7 @@
 						:columns="assessmentColumns"
 						:rows="studentDetails.data.assessments"
 						row-key="title"
-						class="sm:border sm:border-outline-elevation-2 sm:rounded-6"
+						class="sm:border sm:border-outline-elevation-2 sm:rounded-lg"
 						:options="assessmentListOptions"
 					>
 						<template #cell="{ column, value }">
@@ -60,7 +60,7 @@
 						:columns="courseColumns"
 						:rows="studentDetails.data.courses"
 						row-key="title"
-						class="sm:border sm:border-outline-elevation-2 sm:rounded-6"
+						class="sm:border sm:border-outline-elevation-2 sm:rounded-lg"
 						:options="courseListOptions"
 					>
 						<template #cell="{ column, value }">
@@ -182,7 +182,7 @@ const getStatusTheme = (status: string) => {
 	if (status === 'Pass') {
 		return 'green'
 	} else if (status == 'Not Graded') {
-		return 'amber'
+		return 'orange'
 	} else {
 		return 'red'
 	}

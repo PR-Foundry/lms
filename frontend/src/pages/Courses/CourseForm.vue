@@ -58,7 +58,7 @@ interface DialogAction {
 	label: string
 	theme?: string
 	variant?: string
-	onClick: (context: { close: () => void }) => void
+	onClick: (close: () => void) => void
 }
 type DialogFn = (opts: {
 	title: string
@@ -270,7 +270,7 @@ const trashCourse = (): void => {
 				label: __('Delete'),
 				theme: 'red',
 				variant: 'solid',
-				onClick({ close }) {
+				onClick(close) {
 					deleteCourse.submit()
 					close()
 				},

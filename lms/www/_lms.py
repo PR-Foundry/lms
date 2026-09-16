@@ -5,9 +5,10 @@ from bs4 import BeautifulSoup
 from frappe import _
 from frappe.translate import get_user_lang
 from frappe.utils.data import escape_html
+from frappe.utils.jinja_globals import is_rtl
 from frappe.utils.telemetry import capture
 
-from lms.lms.utils import get_lms_path, get_lms_route, resolve_text_direction
+from lms.lms.utils import get_lms_path, get_lms_route
 
 no_cache = 1
 
@@ -30,8 +31,6 @@ def get_context():
 
 
 def get_boot():
-	lang = get_user_lang()
-
 	return frappe._dict(
 		{
 			"frappe_version": frappe.__version__,
@@ -39,8 +38,8 @@ def get_boot():
 			"csrf_token": frappe.sessions.get_csrf_token(),
 			"site_name": frappe.local.site,
 			"lms_path": get_lms_path(),
-			"lang": lang,
-			"text_direction": resolve_text_direction(lang),
+			"lang": get_user_lang(),
+			"text_direction": "rtl" if is_rtl() else "ltr",
 		}
 	)
 

@@ -3,7 +3,6 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import postcss from 'postcss'
 import colors from '../../node_modules/frappe-ui/tailwind/generated/colors.json'
-import { oklchToHex } from './oklch'
 
 // The bug this guards: the document is painted from --surface-base, and that
 // only resolves dark once <html data-theme="dark"> exists. Until this branch
@@ -33,10 +32,7 @@ const themeVariables = (theme: 'light' | 'dark'): Record<string, string> => {
 			const resolved = reference
 				.split('/')
 				.reduce<any>((node, key) => (node == null ? node : node[key]), colors)
-			// frappe-ui exports these as oklch(...) strings; normalize to hex once,
-			// here, so every downstream comparison stays hex-only.
-			if (typeof resolved === 'string')
-				out[`--${group}-${name}`] = oklchToHex(resolved)
+			if (typeof resolved === 'string') out[`--${group}-${name}`] = resolved
 		}
 	}
 	return out

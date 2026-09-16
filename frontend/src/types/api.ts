@@ -34,7 +34,6 @@ export interface SessionUser {
 	data?: UserInfo & {
 		is_moderator?: boolean
 		is_instructor?: boolean
-		is_evaluator?: boolean
 		is_student?: boolean
 		is_system_manager?: boolean
 	}
@@ -98,13 +97,7 @@ export interface OutlineChapter {
 }
 
 export interface CertificationInfo {
-	title?: string | null
-	evaluator?: string | null
-	certificate?: {
-		name: string
-		template: string
-		issue_date?: string
-	} | null
+	certificate?: { name: string; template: string } | null
 	membership?: {
 		purchased_certificate?: 0 | 1
 		certificate?: string

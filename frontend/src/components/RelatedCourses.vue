@@ -40,13 +40,13 @@ const relatedCourses = createResource({
 			course: props.courseName,
 		}
 	},
-	auto: Boolean(props.courseName),
+	auto: true,
 }) as Resource<LMSCourse[] | null>
 
 watch(
 	() => props.courseName,
 	() => {
-		if (props.courseName) relatedCourses.reload()
+		relatedCourses.reload()
 	}
 )
 </script>
